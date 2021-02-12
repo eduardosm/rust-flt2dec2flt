@@ -8,7 +8,4 @@ repository = "https://github.com/eduardosm/rust-flt2dec2flt"
 license = "MIT OR Apache-2.0"
 keywords = ["float", "string", "convert"]
 
-[badges]
-travis-ci = { repository = "eduardosm/rust-flt2dec2flt" }
-
 [dependencies]

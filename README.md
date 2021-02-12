@@ -3,7 +3,7 @@
 [![Crate](https://img.shields.io/crates/v/flt2dec2flt.svg)](https://crates.io/crates/flt2dec2flt)
 [![API](https://docs.rs/flt2dec2flt/badge.svg)](https://docs.rs/flt2dec2flt)
 [![License](https://img.shields.io/crates/l/flt2dec2flt.svg)](https://github.com/eduardosm/rust-flt2dec2flt#license)
-[![TravisCI Build Status](https://travis-ci.org/eduardosm/rust-flt2dec2flt.svg?branch=master)](https://travis-ci.org/eduardosm/rust-flt2dec2flt)
+[![GitHub Actions Status](https://github.com/eduardosm/rust-flt2dec2flt/workflows/CI/badge.svg)](https://github.com/eduardosm/rust-flt2dec2flt/actions)
 
 This crate provides low-level functions to convert floating point
 numbers (`f32` and `f64`) to decimal strings and vice versa.
