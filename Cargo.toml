@@ -1,11 +1,12 @@
 [package]
 name = "flt2dec2flt"
-version = "0.1.0"
+version = "0.2.0-pre"
 authors = ["Eduardo Sánchez Muñoz <esm@eduardosm.net>"]
 edition = "2018"
 description = "Low-level functions to convert floating point numbers to strings and vice versa"
 repository = "https://github.com/eduardosm/rust-flt2dec2flt"
 license = "MIT OR Apache-2.0"
 keywords = ["float", "string", "convert"]
+publish = false
 
 [dependencies]
