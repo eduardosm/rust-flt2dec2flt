@@ -522,9 +522,7 @@ pub fn format_exact_opt<'a>(
         // it can only matter noticeably when the mantissa is bigger than 60 bits.
         //
         // SAFETY: `len=0`, so the obligation of having initialized this memory is trivial.
-        return unsafe {
-            possibly_round(buf, 0, exp, limit, v.f / 10, (max_ten_kappa as u64) << e, err << e)
-        };
+        return possibly_round(buf, 0, exp, limit, v.f / 10, (max_ten_kappa as u64) << e, err << e);
     } else if ((exp as i32 - limit as i32) as usize) < buf.len() {
         (exp - limit) as usize
     } else {
@@ -555,9 +553,7 @@ pub fn format_exact_opt<'a>(
         if i == len {
             let vrem = ((r as u64) << e) + vfrac; // == (v % 10^kappa) * 2^e
             // SAFETY: we have initialized `len` many bytes.
-            return unsafe {
-                possibly_round(buf, len, exp, limit, vrem, (ten_kappa as u64) << e, err << e)
-            };
+            return possibly_round(buf, len, exp, limit, vrem, (ten_kappa as u64) << e, err << e);
         }
 
         // break the loop when we have rendered all integral digits.
@@ -608,7 +604,7 @@ pub fn format_exact_opt<'a>(
         // is the buffer full? run the rounding pass with the remainder.
         if i == len {
             // SAFETY: we have initialized `len` many bytes.
-            return unsafe { possibly_round(buf, len, exp, limit, r, 1 << e, err) };
+            return possibly_round(buf, len, exp, limit, r, 1 << e, err);
         }
 
         // restore invariants
@@ -630,7 +626,7 @@ pub fn format_exact_opt<'a>(
     // - `ulp = 2^-e * k`
     //
     // SAFETY: the first `len` bytes of `buf` must be initialized.
-    unsafe fn possibly_round(
+    fn possibly_round(
         buf: &mut [u8],
         mut len: usize,
         mut exp: i16,
