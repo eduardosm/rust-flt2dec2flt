@@ -2,7 +2,6 @@
 
 use crate::core_num::dec2flt::rawfp::RawFloat;
 use core::num::FpCategory;
-use core::{f32, f64};
 
 /// Decoded unsigned finite value, such that:
 ///

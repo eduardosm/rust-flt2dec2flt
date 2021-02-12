@@ -136,8 +136,8 @@ macro_rules! other_constants {
         const MAX_SIG: u64 = (1 << Self::SIG_BITS) - 1;
         const MIN_SIG: u64 = 1 << (Self::SIG_BITS - 1);
 
-        const INFINITY: Self = core::$type::INFINITY;
-        const NAN: Self = core::$type::NAN;
+        const INFINITY: Self = $type::INFINITY;
+        const NAN: Self = $type::NAN;
         const ZERO: Self = 0.0;
     };
 }

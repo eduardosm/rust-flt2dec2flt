@@ -97,7 +97,10 @@ fn div_rem_upto_16<'a>(
 }
 
 /// The shortest mode implementation for Dragon.
-pub fn format_shortest(d: &Decoded, buf: &mut [u8]) -> (/*#digits*/ usize, /*exp*/ i16) {
+pub fn format_shortest<'a>(
+    d: &Decoded,
+    buf: &'a mut [u8],
+) -> (/*digits*/ &'a [u8], /*exp*/ i16) {
     // the number `v` to format is known to be:
     // - equal to `mant * 2^exp`;
     // - preceded by `(mant - 2 * minus) * 2^exp` in the original type; and
@@ -241,18 +244,22 @@ pub fn format_shortest(d: &Decoded, buf: &mut [u8]) -> (/*#digits*/ usize, /*exp
         // if rounding up changes the length, the exponent should also change.
         // it seems that this condition is very hard to satisfy (possibly impossible),
         // but we are just being safe and consistent here.
-        if let Some(c) = round_up(buf, i) {
+        if let Some(c) = round_up(&mut buf[..i]) {
             buf[i] = c;
             i += 1;
             k += 1;
         }
     }
 
-    (i, k)
+    (&buf[..i], k)
 }
 
 /// The exact and fixed mode implementation for Dragon.
-pub fn format_exact(d: &Decoded, buf: &mut [u8], limit: i16) -> (/*#digits*/ usize, /*exp*/ i16) {
+pub fn format_exact<'a>(
+    d: &Decoded,
+    buf: &'a mut [u8],
+    limit: i16,
+) -> (/*digits*/ &'a [u8], /*exp*/ i16) {
     assert!(d.mant > 0);
     assert!(d.minus > 0);
     assert!(d.plus > 0);
@@ -321,7 +328,7 @@ pub fn format_exact(d: &Decoded, buf: &mut [u8], limit: i16) -> (/*#digits*/ usi
                 for c in &mut buf[i..len] {
                     *c = b'0';
                 }
-                return (len, k);
+                return (&buf[..len], k);
             }
 
             let mut d = 0;
@@ -353,11 +360,12 @@ pub fn format_exact(d: &Decoded, buf: &mut [u8], limit: i16) -> (/*#digits*/ usi
     // round to even (i.e., avoid rounding up when the prior digit is even).
     let order = mant.cmp(scale.mul_small(5));
     if order == Ordering::Greater
-        || (order == Ordering::Equal && (len == 0 || buf[len - 1] & 1 == 1))
+        || (order == Ordering::Equal
+            && (len == 0 || buf[len - 1] & 1 == 1))
     {
         // if rounding up changes the length, the exponent should also change.
         // but we've been requested a fixed number of digits, so do not alter the buffer...
-        if let Some(c) = round_up(buf, len) {
+        if let Some(c) = round_up(&mut buf[..len]) {
             // ...unless we've been requested the fixed precision instead.
             // we also need to check that, if the original buffer was empty,
             // the additional digit can only be added when `k == limit` (edge case).
@@ -369,5 +377,5 @@ pub fn format_exact(d: &Decoded, buf: &mut [u8], limit: i16) -> (/*#digits*/ usi
         }
     }
 
-    (len, k)
+    (&buf[..len], k)
 }

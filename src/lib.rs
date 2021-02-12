@@ -57,11 +57,11 @@
 //! // You could also use `f32::preformat_shortest(value, &mut buf)`
 //! let preformatted = value.preformat_shortest(&mut buf);
 //! // `false` means the the number is positive, `b"125"` are the
-//! // significant digits and `21` is the exponent (such as
-//! // `1.25e20 == 0.125e21`)
+//! // significant digits, `0` is the number of extra zeros at the
+//! // right and `21` is the exponent (such as `1.25e20 == 0.125e21`)
 //! assert_eq!(
 //!     preformatted,
-//!     flt2dec2flt::PreFormatted::Finite(false, b"125", 21),
+//!     flt2dec2flt::PreFormatted::Finite(false, b"125", 0, 21),
 //! );
 //!
 //! // From this decomposed form, you can now build your custom string
@@ -102,13 +102,12 @@
 
 #![deny(
     rust_2018_idioms,
-    trivial_casts,
     trivial_numeric_casts,
     unreachable_pub,
     unused_must_use,
     unused_qualifications
 )]
-#![forbid(unsafe_code)]
+//#![forbid(unsafe_code)]
 #![no_std]
 
 #[cfg(test)]
@@ -145,11 +144,11 @@ pub enum PreFormatted<'a> {
     /// zero. The boolean specifies the sign.
     Zero(bool),
     /// The number is finite. The boolean specifies the sign, the slice
-    /// specifies the mantissa digits and the integer specifies the
-    /// exponent.
+    /// specifies the mantissa digits, the `usize` specifies extra zeros
+    /// at the right and the `u16` specifies the exponent.
     ///
     /// The represented value is `sign 0.mant * 10 ^ exp`
-    Finite(bool, &'a [u8], i16),
+    Finite(bool, &'a [u8], usize, i16),
 }
 
 /// A pre-parsed decimal floating point number.
@@ -185,31 +184,31 @@ pub trait FloatExt: sealed::Sealed + Sized {
     /// let preformatted = f32::preformat_shortest(12.34, &mut buf);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"1234", 2),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"1234", 0, 2),
     /// );
     ///
     /// let preformatted = f32::preformat_shortest(0.00401, &mut buf);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"401", -2),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"401", 0, -2),
     /// );
     ///
     /// let preformatted = f32::preformat_shortest(330.0, &mut buf);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"33", 3),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"33", 0, 3),
     /// );
     ///
     /// let preformatted = f32::preformat_shortest(4.58e31, &mut buf);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"458", 32),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"458", 0, 32),
     /// );
     ///
     /// let preformatted = f32::preformat_shortest(4.58e-31, &mut buf);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"458", -30),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"458", 0, -30),
     /// );
     /// ```
     fn preformat_shortest(self, buf: &mut [u8]) -> PreFormatted<'_>;
@@ -223,36 +222,42 @@ pub trait FloatExt: sealed::Sealed + Sized {
     /// ```
     /// use flt2dec2flt::FloatExt as _;
     ///
-    /// let mut buf = [0; 10];
+    /// let mut buf = [0; 100];
     ///
     /// let preformatted = f32::preformat_exact_exp(200.0, &mut buf, 2);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"20", 3),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"20", 0, 3),
     /// );
     ///
     /// let preformatted = f32::preformat_exact_exp(0.012, &mut buf, 3);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"120", -1),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"120", 0, -1),
     /// );
     ///
     /// let preformatted = f32::preformat_exact_exp(12.34, &mut buf, 5);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"12340", 2),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"12340", 0, 2),
     /// );
     ///
     /// let preformatted = f32::preformat_exact_exp(12.3456, &mut buf, 5);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"12346", 2),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"12346", 0, 2),
     /// );
     ///
     /// let preformatted = f32::preformat_exact_exp(4.0, &mut buf, 10);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"4000000000", 1),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"4000000000", 0, 1),
+    /// );
+    ///
+    /// let preformatted = f32::preformat_exact_exp(4.0, &mut buf, 100);
+    /// assert_eq!(
+    ///     preformatted,
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"40000000000000000000000000000000000000", 62, 1),
     /// );
     /// ```
     fn preformat_exact_exp(self, buf: &mut [u8], num_digits: usize) -> PreFormatted<'_>;
@@ -269,26 +274,26 @@ pub trait FloatExt: sealed::Sealed + Sized {
     /// let preformatted = f32::preformat_exact_fixed(12.34, &mut buf, 4);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"123400", 2),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"123400", 0, 2),
     /// );
     ///
     /// let preformatted = f32::preformat_exact_fixed(12.3456, &mut buf, 2);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"1235", 2),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"1235", 0, 2),
     /// );
     ///
     /// let preformatted = f32::preformat_exact_fixed(200.0, &mut buf, 2);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"20000", 3),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"20000", 0, 3),
     /// );
     ///
     /// // Note that leading zeros count as digits but are omitted.
     /// let preformatted = f32::preformat_exact_fixed(0.03, &mut buf, 3);
     /// assert_eq!(
     ///     preformatted,
-    ///     flt2dec2flt::PreFormatted::Finite(false, b"30", -1),
+    ///     flt2dec2flt::PreFormatted::Finite(false, b"30", 0, -1),
     /// );
     ///
     /// let preformatted = f32::preformat_exact_fixed(0.3e-4, &mut buf, 2);
@@ -336,7 +341,7 @@ mod generic {
             core_num::flt2dec::decoder::FullDecoded::Finite(ref decoded) => {
                 let (digits, exp) =
                     core_num::flt2dec::strategy::grisu::format_shortest(decoded, buf);
-                PreFormatted::Finite(sign, &buf[..digits], exp)
+                PreFormatted::Finite(sign, digits, 0, exp)
             }
         }
     }
@@ -362,10 +367,7 @@ mod generic {
                     &mut buf[..trunc],
                     i16::min_value(),
                 );
-                for chr in buf[digits..ndigits].iter_mut() {
-                    *chr = b'0';
-                }
-                PreFormatted::Finite(sign, &buf[..ndigits], exp)
+                PreFormatted::Finite(sign, digits, ndigits - digits.len(), exp)
             }
         }
     }
@@ -393,7 +395,7 @@ mod generic {
                 } else {
                     i16::min_value()
                 };
-                let (len, exp) = core_num::flt2dec::strategy::grisu::format_exact(
+                let (digits, exp) = core_num::flt2dec::strategy::grisu::format_exact(
                     decoded,
                     &mut buf[..maxlen],
                     limit,
@@ -404,16 +406,13 @@ mod generic {
                     // only after the final rounding-up; it's a regular case with `exp = limit + 1`.
                     PreFormatted::Zero(sign)
                 } else {
-                    let ndigits = if exp > 0 {
+                    let num_zeros = if exp > 0 {
                         let ndigits = frac_digits + exp as usize;
-                        for c in buf[len..ndigits].iter_mut() {
-                            *c = b'0';
-                        }
-                        ndigits
+                        ndigits - digits.len()
                     } else {
-                        len
+                        0
                     };
-                    PreFormatted::Finite(sign, &buf[..ndigits], exp)
+                    PreFormatted::Finite(sign, digits, num_zeros, exp)
                 }
             }
         }

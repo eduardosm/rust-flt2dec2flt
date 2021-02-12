@@ -1,5 +1,5 @@
-// Taken from rust 38114ff16e7856f98b2b4be7ab4cd29b38bed59a libcore::num.
-// `algorithm::fpu_precision` is removed
+// Taken from libcore::num from Rust commit d416093209d0dd77a4cdeb5a2f1b5de1316787ec.
+// `algorithm::fpu_precision` has been removed
 
 //! Numeric traits and functions for the built-in numeric types.
 
@@ -9,4 +9,4 @@ pub mod dec2flt;
 pub mod diy_float;
 pub mod flt2dec;
 
-pub use crate::core_num::dec2flt::ParseFloatError;
+pub use dec2flt::ParseFloatError;

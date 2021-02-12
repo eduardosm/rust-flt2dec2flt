@@ -25,6 +25,7 @@ struct Test<'a, F: Copy + FloatExt + FloatApprox> {
 }
 
 impl<F: Copy + FloatExt + FloatApprox + std::fmt::Display> Test<'_, F> {
+    #[track_caller]
     fn run(&self) {
         for &(preparsed, allowed_error) in self.preparsed.iter() {
             let v = F::from_preparsed(preparsed).unwrap();
@@ -166,9 +167,9 @@ fn test_f32() {
                 1.0e-6,
             ),
         ],
-        preformatted_shortest: PreFormatted::Finite(false, b"3", 1),
-        preformatted_exact_exp: &[(3, PreFormatted::Finite(false, b"300", 1))],
-        preformatted_exact_fixed: &[(3, PreFormatted::Finite(false, b"3000", 1))],
+        preformatted_shortest: PreFormatted::Finite(false, b"3", 0, 1),
+        preformatted_exact_exp: &[(3, PreFormatted::Finite(false, b"300", 0, 1))],
+        preformatted_exact_fixed: &[(3, PreFormatted::Finite(false, b"3000", 0, 1))],
     }
     .run();
 
@@ -183,9 +184,9 @@ fn test_f32() {
             },
             1.0e-6,
         )],
-        preformatted_shortest: PreFormatted::Finite(true, b"3", 1),
-        preformatted_exact_exp: &[(3, PreFormatted::Finite(true, b"300", 1))],
-        preformatted_exact_fixed: &[(3, PreFormatted::Finite(true, b"3000", 1))],
+        preformatted_shortest: PreFormatted::Finite(true, b"3", 0, 1),
+        preformatted_exact_exp: &[(3, PreFormatted::Finite(true, b"300", 0, 1))],
+        preformatted_exact_fixed: &[(3, PreFormatted::Finite(true, b"3000", 0, 1))],
     }
     .run();
 
@@ -200,9 +201,9 @@ fn test_f32() {
             },
             1.0e-6,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"3", 0),
-        preformatted_exact_exp: &[(3, PreFormatted::Finite(false, b"300", 0))],
-        preformatted_exact_fixed: &[(3, PreFormatted::Finite(false, b"300", 0))],
+        preformatted_shortest: PreFormatted::Finite(false, b"3", 0, 0),
+        preformatted_exact_exp: &[(3, PreFormatted::Finite(false, b"300", 0, 0))],
+        preformatted_exact_fixed: &[(3, PreFormatted::Finite(false, b"300", 0, 0))],
     }
     .run();
 
@@ -217,9 +218,9 @@ fn test_f32() {
             },
             1.0e-6,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"3", -1),
-        preformatted_exact_exp: &[(3, PreFormatted::Finite(false, b"300", -1))],
-        preformatted_exact_fixed: &[(3, PreFormatted::Finite(false, b"30", -1))],
+        preformatted_shortest: PreFormatted::Finite(false, b"3", 0, -1),
+        preformatted_exact_exp: &[(3, PreFormatted::Finite(false, b"300", 0, -1))],
+        preformatted_exact_fixed: &[(3, PreFormatted::Finite(false, b"30", 0, -1))],
     }
     .run();
 
@@ -234,9 +235,9 @@ fn test_f32() {
             },
             1.0e-6,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"3", 2),
-        preformatted_exact_exp: &[(3, PreFormatted::Finite(false, b"300", 2))],
-        preformatted_exact_fixed: &[(3, PreFormatted::Finite(false, b"30000", 2))],
+        preformatted_shortest: PreFormatted::Finite(false, b"3", 0, 2),
+        preformatted_exact_exp: &[(3, PreFormatted::Finite(false, b"300", 0, 2))],
+        preformatted_exact_fixed: &[(3, PreFormatted::Finite(false, b"30000", 0, 2))],
     }
     .run();
 
@@ -251,9 +252,9 @@ fn test_f32() {
             },
             1.0e-6,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"303", 0),
-        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"3030", 0))],
-        preformatted_exact_fixed: &[(4, PreFormatted::Finite(false, b"3030", 0))],
+        preformatted_shortest: PreFormatted::Finite(false, b"303", 0, 0),
+        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"3030", 0, 0))],
+        preformatted_exact_fixed: &[(4, PreFormatted::Finite(false, b"3030", 0, 0))],
     }
     .run();
 
@@ -268,9 +269,9 @@ fn test_f32() {
             },
             1.0e-6,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"303", 2),
-        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"3030", 2))],
-        preformatted_exact_fixed: &[(4, PreFormatted::Finite(false, b"303000", 2))],
+        preformatted_shortest: PreFormatted::Finite(false, b"303", 0, 2),
+        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"3030", 0, 2))],
+        preformatted_exact_fixed: &[(4, PreFormatted::Finite(false, b"303000", 0, 2))],
     }
     .run();
 
@@ -285,9 +286,9 @@ fn test_f32() {
             },
             1.0e-6 * 1.0e10,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"222", 10),
-        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"2220", 10))],
-        preformatted_exact_fixed: &[(4, PreFormatted::Finite(false, b"22200000000000", 10))],
+        preformatted_shortest: PreFormatted::Finite(false, b"222", 0, 10),
+        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"2220", 0, 10))],
+        preformatted_exact_fixed: &[(4, PreFormatted::Finite(false, b"22200000000000", 0, 10))],
     }
     .run();
 
@@ -302,8 +303,8 @@ fn test_f32() {
             },
             1.0e-6 * 1.0e35,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"222", 35),
-        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"2220", 35))],
+        preformatted_shortest: PreFormatted::Finite(false, b"222", 0, 35),
+        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"2220", 0, 35))],
         preformatted_exact_fixed: &[],
     }
     .run();
@@ -319,9 +320,9 @@ fn test_f32() {
             },
             1.0e-6 * 1.0e-10,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"222", -10),
-        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"2220", -10))],
-        preformatted_exact_fixed: &[(12, PreFormatted::Finite(false, b"22", -10))],
+        preformatted_shortest: PreFormatted::Finite(false, b"222", 0, -10),
+        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"2220", 0, -10))],
+        preformatted_exact_fixed: &[(12, PreFormatted::Finite(false, b"22", 0, -10))],
     }
     .run();
 
@@ -336,8 +337,8 @@ fn test_f32() {
             },
             1.0e-6 * 1.0e-30,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"222", -30),
-        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"2220", -30))],
+        preformatted_shortest: PreFormatted::Finite(false, b"222", 0, -30),
+        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"2220", 0, -30))],
         preformatted_exact_fixed: &[(4, PreFormatted::Zero(false))],
     }
     .run();
@@ -345,8 +346,8 @@ fn test_f32() {
     Test::<f32> {
         value: 0.222e-35,
         preparsed: &[],
-        preformatted_shortest: PreFormatted::Finite(false, b"222", -35),
-        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"2220", -35))],
+        preformatted_shortest: PreFormatted::Finite(false, b"222", 0, -35),
+        preformatted_exact_exp: &[(4, PreFormatted::Finite(false, b"2220", 0, -35))],
         preformatted_exact_fixed: &[(4, PreFormatted::Zero(false))],
     }
     .run();
@@ -437,9 +438,9 @@ fn test_f64() {
             },
             1.0e-12,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"123456789", 0),
-        preformatted_exact_exp: &[(10, PreFormatted::Finite(false, b"1234567890", 0))],
-        preformatted_exact_fixed: &[(4, PreFormatted::Finite(false, b"1235", 0))],
+        preformatted_shortest: PreFormatted::Finite(false, b"123456789", 0, 0),
+        preformatted_exact_exp: &[(10, PreFormatted::Finite(false, b"1234567890", 0, 0))],
+        preformatted_exact_fixed: &[(4, PreFormatted::Finite(false, b"1235", 0, 0))],
     }
     .run();
 
@@ -454,8 +455,8 @@ fn test_f64() {
             },
             1.0e-12 * 1.0e200,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"123456789", 200),
-        preformatted_exact_exp: &[(10, PreFormatted::Finite(false, b"1234567890", 200))],
+        preformatted_shortest: PreFormatted::Finite(false, b"123456789", 0, 200),
+        preformatted_exact_exp: &[(10, PreFormatted::Finite(false, b"1234567890", 0, 200))],
         preformatted_exact_fixed: &[],
     }
     .run();
@@ -471,8 +472,8 @@ fn test_f64() {
             },
             1.0e-12 * 1.0e-200,
         )],
-        preformatted_shortest: PreFormatted::Finite(false, b"123456789", -200),
-        preformatted_exact_exp: &[(10, PreFormatted::Finite(false, b"1234567890", -200))],
+        preformatted_shortest: PreFormatted::Finite(false, b"123456789", 0, -200),
+        preformatted_exact_exp: &[(10, PreFormatted::Finite(false, b"1234567890", 0, -200))],
         preformatted_exact_fixed: &[(10, PreFormatted::Zero(false))],
     }
     .run();

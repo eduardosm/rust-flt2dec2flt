@@ -118,7 +118,6 @@ functions.
 #![doc(hidden)]
 
 pub use self::decoder::{decode, DecodableFloat, Decoded, FullDecoded};
-use core::i16;
 
 pub mod decoder;
 pub mod estimator;
@@ -136,23 +135,23 @@ pub mod strategy {
 /// The exact formula is `ceil(# bits in mantissa * log_10 2 + 1)`.
 pub const MAX_SIG_DIGITS: usize = 17;
 
-/// When `d[..n]` contains decimal digits, increase the last digit and propagate carry.
-/// Returns a next digit when it causes the length change.
+/// When `d` contains decimal digits, increase the last digit and propagate carry.
+/// Returns a next digit when it causes the length to change.
 #[doc(hidden)]
-pub fn round_up(d: &mut [u8], n: usize) -> Option<u8> {
-    match d[..n].iter().rposition(|&c| c != b'9') {
+pub fn round_up(d: &mut [u8]) -> Option<u8> {
+    match d.iter().rposition(|&c| c != b'9') {
         Some(i) => {
             // d[i+1..n] is all nines
             d[i] += 1;
-            for j in i + 1..n {
+            for j in i + 1..d.len() {
                 d[j] = b'0';
             }
             None
         }
-        None if n > 0 => {
+        None if d.len() > 0 => {
             // 999..999 rounds to 1000..000 with an increased exponent
             d[0] = b'1';
-            for j in 1..n {
+            for j in 1..d.len() {
                 d[j] = b'0';
             }
             Some(b'0')
