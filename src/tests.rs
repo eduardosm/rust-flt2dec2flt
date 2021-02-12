@@ -110,7 +110,7 @@ fn test_f32() {
     .run();
 
     Test::<f32> {
-        value: core::f32::NAN,
+        value: f32::NAN,
         preparsed: &[],
         preformatted_shortest: PreFormatted::NaN,
         preformatted_exact_exp: &[(3, PreFormatted::NaN)],
@@ -119,7 +119,7 @@ fn test_f32() {
     .run();
 
     Test::<f32> {
-        value: core::f32::INFINITY,
+        value: f32::INFINITY,
         preparsed: &[],
         preformatted_shortest: PreFormatted::Inf(false),
         preformatted_exact_exp: &[(3, PreFormatted::Inf(false))],
@@ -128,7 +128,7 @@ fn test_f32() {
     .run();
 
     Test::<f32> {
-        value: core::f32::NEG_INFINITY,
+        value: f32::NEG_INFINITY,
         preparsed: &[],
         preformatted_shortest: PreFormatted::Inf(true),
         preformatted_exact_exp: &[(3, PreFormatted::Inf(true))],

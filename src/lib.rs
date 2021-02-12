@@ -22,7 +22,7 @@
 //!
 //! # Minimum Rust version
 //!
-//! The minimum Rust version required by this crate is 1.34.
+//! The minimum Rust version required by this crate is 1.43.
 //!
 //! # Example (float to string)
 //!
